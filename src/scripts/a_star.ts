@@ -1,4 +1,4 @@
-import { pathIDs, finalPathIDs, wallIDs, startID, endID, render, renderFinalPath } from "@/scripts/map_render";
+import { pathIDs, finalPathIDs, wallIDs, startID, endID, render, renderFinalPath, setRunningState } from "@/scripts/map_render";
 
 const COLUMNS = 25;
 const ROWS = 14;
@@ -123,7 +123,8 @@ let isRunning = false;
 
 export async function runAStar(): Promise<void> {
     if (isRunning) return;
-
+    setRunningState(true);
+    
     isRunning = true;
 
     pathIDs.length = 0;
@@ -137,5 +138,6 @@ export async function runAStar(): Promise<void> {
         const finalPath = await aStar();
         finalPathIDs.push(...finalPath);
         await renderFinalPath();
+        setRunningState(false);
     }
 }
