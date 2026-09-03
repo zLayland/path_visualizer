@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { setButtonType } from "@/scripts/map_render";
 import { runAStar } from "@/scripts/a_star";
+import { setFPS } from "@/scripts/a_star";
+
 
 function renderButtons (activeButton: string) {
         const wallBtn = document.getElementById("wall") as HTMLButtonElement;
@@ -42,6 +44,7 @@ export function Selection() {
             <button className="bg-red-800 w-20 h-10 rounded-xl" id="end" onClick={() => handleButtonClick("end")}>
                 End
             </button>
+            <input type="range" min="1" max="500" defaultValue="30" id="fps-slider" onChange={(e) => setFPS(parseInt(e.target.value))}></input>
             <button className="bg-blue-800 w-20 h-10 rounded-xl ml-auto" id="play" onClick={runAStar}>
                 Play
             </button>

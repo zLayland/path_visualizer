@@ -4,14 +4,10 @@ export const finalPathIDs: number[] = [];
 export let startID = 0;
 export let endID = 349;
 let buttonType = "wall";
-let running = false;
+import { running } from "@/scripts/a_star";
 
 export function setButtonType(buttonState: string) {
     buttonType = buttonState;
-}
-
-export function setRunningState(state: boolean) {
-    running = state;
 }
 
 export function render() {
@@ -65,21 +61,21 @@ export async function renderFinalPath(): Promise<void> {
 
 function handleButtonClick(buttonClicked: HTMLButtonElement) {
     const btnID = parseInt(buttonClicked.id);
-    if (!running) {
-        if (buttonType === "wall") {
-            if (!wallIDs.includes(btnID)) {
-                wallIDs.push(btnID);
-            }
-            else {
-                wallIDs.splice(wallIDs.indexOf(btnID), 1);
-            }
+    if (running) return;
+    
+    if (buttonType === "wall") {
+        if (!wallIDs.includes(btnID)) {
+            wallIDs.push(btnID);
         }
-        else if (buttonType === "start" && btnID !== endID) {
-            startID = btnID;
+        else {
+            wallIDs.splice(wallIDs.indexOf(btnID), 1);
         }
-        else if (buttonType === "end" && btnID !== startID) {
-            endID = btnID;
-        }
+    }
+    else if (buttonType === "start" && btnID !== endID) {
+        startID = btnID;
+    }
+    else if (buttonType === "end" && btnID !== startID) {
+        endID = btnID;
     }
 
     render();

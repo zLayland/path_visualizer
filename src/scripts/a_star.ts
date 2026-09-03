@@ -1,4 +1,5 @@
-import { pathIDs, finalPathIDs, wallIDs, startID, endID, render, renderFinalPath, setRunningState } from "@/scripts/map_render";
+import { pathIDs, finalPathIDs, wallIDs, startID, endID, render, renderFinalPath } from "@/scripts/map_render";
+import { useState } from "react";
 
 const COLUMNS = 25;
 const ROWS = 14;
@@ -53,8 +54,8 @@ function sleep(ms: number): Promise<void> {
 
 let fps = 30;
 
-export function setFPS(fps: number): void {
-    fps = Math.max(1, fps);
+export function setFPS(sliderFps: number): void {
+    fps = Math.max(1, sliderFps);
 }
 
 async function aStar() {
@@ -78,7 +79,7 @@ async function aStar() {
 
         if (currentGridNode.id === endGridNode.id) {
             console.log("path found");
-            console.log(reconstructPath(currentGridNode));
+            //console.log(reconstructPath(currentGridNode));
             return reconstructPath(currentGridNode);
         }
 
@@ -119,25 +120,17 @@ async function aStar() {
     return [];
 }
 
-let isRunning = false;
+export let running = false;
 
 export async function runAStar(): Promise<void> {
-    if (isRunning) return;
-    setRunningState(true);
-    
-    isRunning = true;
+    if (running) return;
+    running = true;
 
     pathIDs.length = 0;
     finalPathIDs.length = 0;
 
-
-    try {
-        await aStar();
-    } finally {
-        isRunning = false;
-        const finalPath = await aStar();
-        finalPathIDs.push(...finalPath);
-        await renderFinalPath();
-        setRunningState(false);
-    }
+    const finalPath = await aStar();
+    finalPathIDs.push(...finalPath);
+    await renderFinalPath();
+    running = false;
 }
