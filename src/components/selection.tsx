@@ -1,53 +1,83 @@
-import { useState } from "react";
-import { setButtonType } from "@/scripts/map_render";
-import { runAStar } from "@/scripts/a_star";
-import { setFPS } from "@/scripts/a_star";
+export type Tool = "wall" | "start" | "end";
 
+interface SelectionProps {
+  tool: Tool;
+  onToolChange: (tool: Tool) => void;
+  speed: number;
+  onSpeedChange: (speed: number) => void;
+  onRun: () => void;
+  onClearPath: () => void;
+  onClearBoard: () => void;
+  running: boolean;
+}
 
-function renderButtons (activeButton: string) {
-        const wallBtn = document.getElementById("wall") as HTMLButtonElement;
-        const startBtn = document.getElementById("start") as HTMLButtonElement;
-        const endBtn = document.getElementById("end") as HTMLButtonElement;
-        
-        wallBtn.className = "bg-zinc-800 w-20 h-10 rounded-xl"
-        startBtn.className = "bg-green-800 w-20 h-10 rounded-xl"
-        endBtn.className = "bg-red-800 w-20 h-10 rounded-xl"
-        
-        if (activeButton === "wall") {
-            wallBtn.className = "bg-zinc-900 w-20 h-10 rounded-xl"
-        }
-        else if (activeButton === "start") {
-            startBtn.className = "bg-green-950 w-20 h-10 rounded-xl"
-        }
-        else if (activeButton === "end") {
-            endBtn.className = "bg-red-950 w-20 h-10 rounded-xl"
-        }
-    }
+export function Selection({
+  tool,
+  onToolChange,
+  speed,
+  onSpeedChange,
+  onRun,
+  onClearPath,
+  onClearBoard,
+  running,
+}: SelectionProps) {
+  return (
+    <div className="controls-card">
+      <div className="tool-group" role="group" aria-label="Grid editing tool">
+        <button
+          type="button"
+          className={`tool-button wall-tool ${tool === "wall" ? "active" : ""}`}
+          onClick={() => onToolChange("wall")}
+          disabled={running}
+        >
+          <span className="tool-dot wall-dot" /> Walls
+        </button>
+        <button
+          type="button"
+          className={`tool-button ${tool === "start" ? "active" : ""}`}
+          onClick={() => onToolChange("start")}
+          disabled={running}
+        >
+          <span className="tool-dot start-dot" /> Start
+        </button>
+        <button
+          type="button"
+          className={`tool-button ${tool === "end" ? "active" : ""}`}
+          onClick={() => onToolChange("end")}
+          disabled={running}
+        >
+          <span className="tool-dot end-dot" /> End
+        </button>
+      </div>
 
-export function Selection() {
-    const [activeButton, setActiveButton] = useState("wall");
-
-    const handleButtonClick = (buttonType: string) => {
-        setActiveButton(buttonType);
-        setButtonType(buttonType);
-        renderButtons(buttonType);
-    }
-
-    return (
-        <div className="font-[monospace] px-10 w-325 h-20 flex gap-4">
-            <button className="bg-zinc-800 w-20 h-10 rounded-xl" id="wall" onClick={() => handleButtonClick("wall")}>
-                Wall
-            </button>
-            <button className="bg-green-800 w-20 h-10 rounded-xl" id="start" onClick={() => handleButtonClick("start")}>
-                Start
-            </button>
-            <button className="bg-red-800 w-20 h-10 rounded-xl" id="end" onClick={() => handleButtonClick("end")}>
-                End
-            </button>
-            <input type="range" min="1" max="500" defaultValue="30" id="fps-slider" onChange={(e) => setFPS(parseInt(e.target.value))}></input>
-            <button className="bg-blue-800 w-20 h-10 rounded-xl ml-auto" id="play" onClick={runAStar}>
-                Play
-            </button>
+      <div className="speed-control">
+        <div className="speed-label">
+          <span>Animation speed</span>
+          <strong>{speed}%</strong>
         </div>
-    );
+        <input
+          aria-label="Animation speed"
+          type="range"
+          min="1"
+          max="100"
+          value={speed}
+          onChange={(event) => onSpeedChange(Number(event.target.value))}
+          disabled={running}
+        />
+      </div>
+
+      <div className="action-group">
+        <button type="button" className="secondary-button" onClick={onClearPath} disabled={running}>
+          Clear path
+        </button>
+        <button type="button" className="secondary-button" onClick={onClearBoard} disabled={running}>
+          Reset board
+        </button>
+        <button type="button" className="run-button" onClick={onRun} disabled={running}>
+          <span className="play-icon" aria-hidden="true" />
+          {running ? "Running…" : "Visualize"}
+        </button>
+      </div>
+    </div>
+  );
 }

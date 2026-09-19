@@ -1,11 +1,44 @@
-export function Header() {
-    return (
-        <div className="py-10 h-20 font-[monospace] text-xl grid grid-cols-2 justify-items-center">
-            <h1>Path Visualizer</h1>
-            <div className="grid grid-cols-2 gap-10">
-                <button>A*</button>
-                <button>Dijkstra</button>
-            </div>
+import type { Algorithm } from "@/scripts/pathfinding";
+
+interface HeaderProps {
+  algorithm: Algorithm;
+  onAlgorithmChange: (algorithm: Algorithm) => void;
+  disabled: boolean;
+}
+
+export function Header({ algorithm, onAlgorithmChange, disabled }: HeaderProps) {
+  return (
+    <header className="site-header">
+      <div className="brand">
+        <div className="brand-mark" aria-hidden="true">
+          <span />
+          <span />
+          <span />
         </div>
-    );
+        <div>
+          <p className="eyebrow">Algorithm playground</p>
+          <h1>Path Visualizer</h1>
+        </div>
+      </div>
+
+      <div className="algorithm-switch" role="group" aria-label="Pathfinding algorithm">
+        <button
+          type="button"
+          className={algorithm === "astar" ? "active" : ""}
+          onClick={() => onAlgorithmChange("astar")}
+          disabled={disabled}
+        >
+          A*
+        </button>
+        <button
+          type="button"
+          className={algorithm === "dijkstra" ? "active" : ""}
+          onClick={() => onAlgorithmChange("dijkstra")}
+          disabled={disabled}
+        >
+          Dijkstra
+        </button>
+      </div>
+    </header>
+  );
 }
